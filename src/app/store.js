@@ -1,44 +1,47 @@
-// Importa la función para configurar el store de Redux desde Redux Toolkit
+// === Redux Store Setup for Video Clips Application ===
+
+// Import Redux Toolkit's configureStore function to create the Redux store
 import { configureStore } from "@reduxjs/toolkit";
 
-// Importa el reducer que maneja la lógica de estado para los clips de video
+// Import the reducer responsible for managing the clips-related state
 import clipsReducer from "../features/clips/clipsSlice";
 
-// Intenta recuperar el estado previamente guardado desde localStorage
+// Attempt to retrieve previously saved state from localStorage
 const saved = localStorage.getItem("clipsState");
 let parsed = {};
 
-// Intenta parsear el JSON recuperado desde localStorage.
-// En caso de error (por ejemplo, si el JSON está corrupto), se asigna un objeto vacío.
+// Try parsing the JSON retrieved from localStorage.
+// If parsing fails (e.g., corrupted data), fall back to an empty object.
 try {
   parsed = saved ? JSON.parse(saved) : {};
 } catch {
   parsed = {};
 }
 
-// Se establece el estado inicial (preloadedState) con una estructura predeterminada
-// Esto garantiza que siempre existan las claves `videos` y `currentVideoId` en el estado,
-// lo cual previene errores por claves no definidas en el reducer
+// Define the initial state structure (preloadedState).
+// This ensures `videos` and `currentVideoId` keys always exist,
+// preventing reducer errors from undefined keys.
 const preloadedState = {
   clips: {
-    videos: parsed.videos || {}, // Diccionario de videos por ID
-    currentVideoId: parsed.currentVideoId || null, // ID del video actualmente seleccionado
+    videos: parsed.videos || {}, // Dictionary of video clips indexed by ID
+    currentVideoId: parsed.currentVideoId || null, // Currently selected video clip ID
   },
 };
 
-// Configura el store de Redux utilizando Redux Toolkit.
-// Se asigna el reducer bajo la clave `clips`, y se proporciona el estado inicial cargado desde localStorage.
+// Configure the Redux store with:
+// - The `clips` reducer (slice)
+// - The preloaded state loaded from localStorage
 export const store = configureStore({
   reducer: {
-    clips: clipsReducer, // Define el "slice" del estado asociado a los clips
+    clips: clipsReducer,
   },
-  preloadedState, // Estado inicial del store
+  preloadedState,
 });
 
-// Suscripción al store para guardar automáticamente el estado cada vez que cambia.
-// Esto permite que el estado persista entre recargas de la página.
+// Subscribe to store updates.
+// On every state change, persist only the `clips` state to localStorage.
+// This enables state persistence across page reloads.
 store.subscribe(() => {
-  const state = store.getState(); // Obtiene el estado actual del store
-  // Guarda únicamente la parte del estado relacionada con los clips
+  const state = store.getState();
   localStorage.setItem("clipsState", JSON.stringify(state.clips));
 });

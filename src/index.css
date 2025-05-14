@@ -640,14 +640,14 @@ li button {
   position: absolute;
   width: 100%;
   box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
-  color: #1e293b; /* ✅ color de texto visible */
+  color: #1e293b; /*  color de texto visible */
 }
 .search-result {
   padding: 0.5rem;
   cursor: pointer;
   font-size: 0.9rem;
   border-bottom: 1px solid #f3f4f6;
-  color: #1e293b; /* ✅ asegura visibilidad del texto */
+  color: #1e293b; /*  asegura visibilidad del texto */
 }
 
 .search-result:hover {

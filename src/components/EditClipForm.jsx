@@ -1,104 +1,105 @@
-// Importación de React y hooks de estado
-import React, { useState } from "react";
+// === EditClipForm Component ===
 
-// Hook de Redux para despachar acciones
+import React, { useState } from "react";
 import { useDispatch } from "react-redux";
 
-// Acción para editar un clip existente
+// Redux action to update an existing clip
 import { editClip } from "../features/clips/clipsSlice";
 
 /**
- * Componente EditClipForm
+ * EditClipForm Component
  *
- * Este componente presenta un formulario editable para modificar un clip existente
- * asociado a un video. Permite cambiar el nombre, tiempos de inicio y fin, y las etiquetas.
+ * Provides an editable form to modify an existing clip associated with a video.
+ * Allows the user to update the clip's name, start and end times, and associated tags.
  *
  * Props:
- * - clip: objeto clip a editar.
- * - videoId: identificador del video al que pertenece el clip.
- * - onCancel: función callback que se ejecuta al cancelar o guardar.
+ * - clip (object): The clip object to edit.
+ * - videoId (string): ID of the video to which the clip belongs.
+ * - onCancel (function): Callback function triggered after saving or canceling the form.
  */
 const EditClipForm = ({ clip, videoId, onCancel }) => {
   const dispatch = useDispatch();
 
-  // Estados locales para mantener los valores editables del clip
+  // Local states to hold form input values
   const [name, setName] = useState(clip.name);
   const [start, setStart] = useState(clip.start);
   const [end, setEnd] = useState(clip.end);
-  const [tagsInput, setTagsInput] = useState(clip.tags.join(", ")); // Unifica etiquetas como string
+  const [tagsInput, setTagsInput] = useState(clip.tags.join(", ")); // Tags as a comma-separated string
 
   /**
-   * Manejador de envío del formulario.
-   * Crea un objeto actualizado del clip y lo envía al store.
+   * Handle form submission:
+   * - Validates and parses inputs
+   * - Dispatches Redux action to update the clip
+   * - Closes the form afterward
    */
   const handleSubmit = (e) => {
     e.preventDefault();
 
-    // Construye el clip actualizado con los nuevos valores
+    // Construct the updated clip object
     const updatedClip = {
       ...clip,
       name,
       start: parseFloat(start),
       end: parseFloat(end),
       tags: tagsInput
-        .split(",") // Divide por comas
-        .map((t) => t.trim()) // Elimina espacios
-        .filter(Boolean), // Quita vacíos
+        .split(",") // Split input by commas
+        .map((t) => t.trim()) // Trim whitespace
+        .filter(Boolean), // Remove empty tags
     };
 
-    // Despacha la acción para editar el clip
+    // Dispatch action to update the clip in the store
     dispatch(editClip({ videoId, clip: updatedClip }));
 
-    // Llama a la función onCancel para cerrar el formulario
+    // Close the form (triggers parent logic)
     onCancel();
   };
 
   return (
     <form
-      className="clip-item edit-form" // Estilo reutilizable
+      className="clip-item edit-form"
       onSubmit={handleSubmit}
       style={{ marginTop: "0.5rem" }}
     >
-      {/* Campo: nombre del clip */}
+      {/* Input: Clip name */}
       <input
         type="text"
         value={name}
-        placeholder="Nombre"
+        placeholder="Name"
         onChange={(e) => setName(e.target.value)}
       />
 
-      {/* Campo: tiempo de inicio */}
+      {/* Input: Clip start time in seconds */}
       <input
         type="number"
         value={start}
-        placeholder="Inicio (s)"
+        placeholder="Start (s)"
         onChange={(e) => setStart(e.target.value)}
       />
 
-      {/* Campo: tiempo de fin */}
+      {/* Input: Clip end time in seconds */}
       <input
         type="number"
         value={end}
-        placeholder="Fin (s)"
+        placeholder="End (s)"
         onChange={(e) => setEnd(e.target.value)}
       />
 
-      {/* Campo: etiquetas separadas por coma */}
+      {/* Input: Tags (comma-separated) */}
       <input
         type="text"
         value={tagsInput}
-        placeholder="Etiquetas (coma)"
+        placeholder="Tags (comma separated)"
         onChange={(e) => setTagsInput(e.target.value)}
       />
 
-      {/* Botones para guardar o cancelar */}
-      <button type="submit">Guardar</button>
+      {/* Action buttons */}
+      <button type="submit">Save</button>
       <button type="button" onClick={onCancel}>
-        Cancelar
+        Cancel
       </button>
     </form>
   );
 };
 
-// Exportación del componente para su uso externo
+// Export the component for reuse
 export default EditClipForm;

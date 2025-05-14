@@ -1,34 +1,34 @@
-// Importación de React y hooks de Redux
+// === ClipMarkers Component ===
+
 import React from "react";
 import { useDispatch, useSelector } from "react-redux";
 
-// Importa la acción para seleccionar un clip específico
+// Redux action to set the current clip
 import { setCurrentClip } from "../features/clips/clipsSlice";
 
 /**
- * Componente ClipMarkers
+ * ClipMarkers Component
  *
- * Este componente visualiza marcadores sobre una barra de progreso personalizada
- * que indica los puntos de inicio de los clips dentro del video actual.
- *
- * Permite hacer clic sobre un marcador para seleccionar y reproducir el clip correspondiente.
+ * Renders clickable markers along a custom progress bar that indicate
+ * the start times of each clip in the current video. Clicking on a marker
+ * selects and plays the corresponding clip.
  *
  * Props:
- * - videoDuration: duración total del video en segundos, usada para calcular posiciones relativas.
+ * - videoDuration (number): Total duration of the video in seconds, used to calculate relative positions.
  */
 const ClipMarkers = ({ videoDuration }) => {
   const dispatch = useDispatch();
 
-  // Obtiene el ID del video actualmente seleccionado desde el estado global
+  // Get the ID of the currently selected video from the Redux store
   const currentVideoId = useSelector((state) => state.clips.currentVideoId);
 
-  // Obtiene el objeto video correspondiente al ID actual
+  // Get the video object associated with the current video ID
   const video = useSelector((state) => state.clips.videos?.[currentVideoId]);
 
-  // Extrae los clips definidos para el video (o una lista vacía si no existen)
+  // Retrieve the list of clips for the current video, or return an empty array
   const clips = video?.clips || [];
 
-  // Si no hay clips o la duración del video es inválida, no renderiza nada
+  // Do not render if there are no clips or the video duration is invalid
   if (!clips.length || !videoDuration) return null;
 
   return (
@@ -41,18 +41,18 @@ const ClipMarkers = ({ videoDuration }) => {
         borderRadius: "5px",
       }}
     >
-      {/* Mapea los clips y dibuja un marcador en la posición de inicio relativa de cada uno */}
+      {/* Iterate over each clip and render a marker at its start time */}
       {clips.map((clip) => {
-        // Verifica que el clip tenga tiempo de inicio válido y que la duración del video no sea cero
+        // Ensure the clip has a valid start time and the video duration is non-zero
         if (clip.start == null || videoDuration === 0) return null;
 
-        // Calcula la posición horizontal del marcador como porcentaje del ancho total
+        // Calculate horizontal position of the marker as a percentage of total width
         const left = (clip.start / videoDuration) * 100;
 
         return (
           <div
             key={clip.id}
-            title={clip.name} // Tooltip al pasar el mouse
+            title={clip.name} // Show clip name as tooltip on hover
             onClick={() =>
               dispatch(
                 setCurrentClip({ videoId: currentVideoId, clipId: clip.id })
@@ -60,11 +60,11 @@ const ClipMarkers = ({ videoDuration }) => {
             }
             style={{
               position: "absolute",
-              left: `${left}%`, // Posición horizontal relativa
+              left: `${left}%`, // Position marker relative to video duration
               top: 0,
               width: "8px",
               height: "10px",
-              backgroundColor: "#007bff", // Azul para resaltar
+              backgroundColor: "#007bff", // Blue marker color
               cursor: "pointer",
               borderRadius: "2px",
             }}
@@ -75,5 +75,5 @@ const ClipMarkers = ({ videoDuration }) => {
   );
 };
 
-// Exportación del componente para ser usado en otras partes de la app
+// Export the component for use in other parts of the application
 export default ClipMarkers;

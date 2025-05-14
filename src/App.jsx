@@ -1,29 +1,33 @@
-// Importaciones principales de React y componentes internos
+// === Main Application Component ===
+
 import React, { useState } from "react";
+
+// Internal components
 import Navbar from "./components/Navbar";
 import VideoPlayer from "./components/VideoPlayer";
 import ClipForm from "./components/ClipForm";
 import ClipList from "./components/ClipList";
 
 /**
- * Componente principal de la aplicación
+ * App Component
  *
- * Este componente define la estructura general del layout y coordina:
- * - Barra de navegación (Navbar)
- * - Reproductor de video con clips (VideoPlayer)
- * - Lista de clips asociados al video (ClipList)
- * - Formulario modal para agregar nuevos clips (ClipForm)
+ * This is the main layout component of the application.
+ * It orchestrates the following components:
+ * - Navbar with search functionality
+ * - Video player with active clip (VideoPlayer)
+ * - List of video clips (ClipList)
+ * - Modal form for adding new clips (ClipForm)
  */
 function App() {
-  // Estado para la búsqueda de clips por nombre o etiquetas
+  // State for filtering clips by name or tags
   const [searchQuery, setSearchQuery] = useState("");
 
-  // Control de visibilidad del modal para agregar clips
+  // State for modal visibility and exit animation
   const [showModal, setShowModal] = useState(false);
-  const [isClosing, setIsClosing] = useState(false); // Controla animación de cierre
+  const [isClosing, setIsClosing] = useState(false);
 
   /**
-   * Abre el modal de creación de clip
+   * Opens the modal to add a new clip.
    */
   const openModal = () => {
     setShowModal(true);
@@ -31,40 +35,40 @@ function App() {
   };
 
   /**
-   * Cierra el modal con animación suave
+   * Closes the modal with a smooth fade/slide animation.
    */
   const closeModal = () => {
     setIsClosing(true);
     setTimeout(() => {
       setShowModal(false);
       setIsClosing(false);
-    }, 300); // Delay para permitir animación de salida
+    }, 300); // Delay to allow exit animation
   };
 
   return (
     <div className="App">
-      {/* Barra de navegación con campo de búsqueda */}
+      {/* Top navigation bar with search input */}
       <Navbar onSearch={setSearchQuery} />
 
-      {/* Contenedor principal de la interfaz */}
+      {/* Main layout content */}
       <div className="main-content">
-        {/* Sección del reproductor de video */}
+        {/* Section: video playback */}
         <div className="video-section">
           <VideoPlayer />
         </div>
 
-        {/* Sección de la lista de clips */}
+        {/* Section: clip list and modal trigger */}
         <div className="cliplist-section">
-          {/* Botón flotante para abrir el modal */}
+          {/* Floating action button to open clip creation modal */}
           <button
             className="floating-button"
             onClick={openModal}
-            title="Agregar nuevo clip"
+            title="Add new clip"
           >
             <i className="fas fa-plus"></i>
           </button>
 
-          {/* Modal de formulario para agregar nuevo clip */}
+          {/* Modal overlay for adding new clips */}
           {showModal && (
             <div
               className={`modal-overlay ${isClosing ? "fade-out" : ""}`}
@@ -72,14 +76,14 @@ function App() {
             >
               <div
                 className={`modal ${isClosing ? "slide-out" : ""}`}
-                onClick={(e) => e.stopPropagation()} // Previene cierre si se hace clic dentro del modal
+                onClick={(e) => e.stopPropagation()} // Prevent modal from closing on inner click
               >
                 <ClipForm onClose={closeModal} />
               </div>
             </div>
           )}
 
-          {/* Lista de clips, filtrada por término de búsqueda */}
+          {/* Render filtered clip list based on search */}
           <ClipList search={searchQuery} />
         </div>
       </div>
@@ -87,5 +91,5 @@ function App() {
   );
 }
 
-// Exportación del componente principal
+// Export the main application component
 export default App;

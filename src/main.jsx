@@ -1,34 +1,33 @@
-// Importación del modo estricto de React para detección de errores y prácticas obsoletas
-import { StrictMode } from "react";
+// === Application Entry Point ===
 
-// Crea el punto de entrada React para renderizado concurrente
+import { StrictMode } from "react";
 import { createRoot } from "react-dom/client";
 
-// React Router: configuración de rutas
+// Routing with React Router
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 
-// Componentes de la aplicación
-import VideoLibrary from "./components/VideoLibrary.jsx";
+// App components
 import App from "./App.jsx";
+import VideoLibrary from "./components/VideoLibrary.jsx";
 
-// Estilos globales
+// Global styles
 import "./index.css";
 
-// Redux: proveedor del estado global
+// Redux store and provider
 import { Provider } from "react-redux";
 import { store } from "./app/store";
 
 /**
- * Punto de entrada de la aplicación React.
+ * Entry point of the React application.
  *
- * - `StrictMode`: ayuda a detectar posibles problemas en desarrollo.
- * - `Provider`: inyecta el store de Redux en todos los componentes.
- * - `BrowserRouter`: permite la navegación por rutas.
- * - `Routes`: define las rutas disponibles en la SPA.
+ * - `StrictMode`: Activates additional checks and warnings in development.
+ * - `Provider`: Wraps the app with the Redux store for global state management.
+ * - `BrowserRouter`: Enables client-side routing for SPA behavior.
+ * - `Routes`: Defines the navigable pages of the application.
  *
- * Rutas definidas:
- * - `/`: Página principal con reproductor y clips (`App`)
- * - `/videos`: Biblioteca de videos (`VideoLibrary`)
+ * Available routes:
+ * - `/`: Main application with video player and clip manager (`App`)
+ * - `/videos`: User's saved video library (`VideoLibrary`)
  */
 createRoot(document.getElementById("root")).render(
   <StrictMode>

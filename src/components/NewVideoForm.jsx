@@ -1,31 +1,32 @@
-// Importaciones necesarias
+// === NewVideoForm Component ===
+
 import React, { useState } from "react";
 import { useDispatch } from "react-redux";
 
-// Acciones para agregar un nuevo video y seleccionarlo
+// Redux actions to add and select a video
 import { addVideo, setCurrentVideo } from "../features/clips/clipsSlice";
 
 /**
- * Componente NewVideoForm
+ * NewVideoForm Component
  *
- * Este componente proporciona un formulario para ingresar los datos de un nuevo video:
- * - URL del video en formato .mp4
- * - Nombre del video
- * - Ícono representativo
+ * Provides a form to input data for adding a new video:
+ * - Video URL (must be a valid .mp4 link)
+ * - Custom video name
+ * - Selectable icon thumbnail
  *
  * Props:
- * - onClose: función que se ejecuta al cerrar el formulario (ej. cerrar modal)
+ * - onClose (function): Optional callback to close the form (e.g., modal dismissal).
  */
 const NewVideoForm = ({ onClose }) => {
   const dispatch = useDispatch();
 
-  // Estado para la URL del video
+  // State to manage video URL input
   const [url, setUrl] = useState("");
 
-  // Estado para el nombre personalizado del video
+  // State to manage custom video name input
   const [name, setName] = useState("");
 
-  // Íconos disponibles para seleccionar en miniatura
+  // Available icon options to choose as thumbnails
   const ICONS = [
     { id: "icon-1", path: "/icons/icon-1.jpg" },
     { id: "icon-2", path: "/icons/icon-2.jpg" },
@@ -34,58 +35,60 @@ const NewVideoForm = ({ onClose }) => {
     { id: "icon-5", path: "/icons/icon-5.jpg" },
   ];
 
-  // Icono actualmente seleccionado
+  // Currently selected icon path
   const [iconPath, setIconPath] = useState("/icons/icon-1.jpg");
 
   /**
-   * Manejador del formulario.
-   * Valida, crea un video con ID único y lo agrega al store.
+   * Handles form submission:
+   * - Validates the URL
+   * - Dispatches actions to add and select the new video
+   * - Clears form fields and closes the modal
    */
   const handleSubmit = (e) => {
     e.preventDefault();
 
-    // Validación básica de campo URL
+    // Basic validation: video URL is required
     if (!url.trim()) return;
 
-    const id = Date.now().toString(); // ID único generado por timestamp
+    const id = Date.now().toString(); // Generate unique ID from timestamp
 
-    // Despacha la acción para agregar un nuevo video
+    // Dispatch action to add video
     dispatch(addVideo({ id, url, name, icon: iconPath }));
 
-    // Selecciona el video recién agregado como activo
+    // Set the new video as the current active one
     dispatch(setCurrentVideo(id));
 
-    // Limpia los campos
+    // Reset form fields
     setName("");
     setUrl("");
 
-    // Cierra el formulario si se proporciona el callback
+    // Trigger close if callback is provided
     onClose?.();
   };
 
   return (
     <form onSubmit={handleSubmit}>
-      <h3>Agregar nuevo video</h3>
+      <h3>Add New Video</h3>
 
-      {/* Campo para ingresar la URL del video */}
+      {/* Input: Video URL */}
       <input
         type="text"
-        placeholder="URL del video (.mp4)"
+        placeholder="Video URL (.mp4)"
         value={url}
         onChange={(e) => setUrl(e.target.value)}
       />
 
-      {/* Campo para nombre descriptivo del video */}
+      {/* Input: Video name */}
       <input
         type="text"
-        placeholder="Nombre del video"
+        placeholder="Video name"
         value={name}
         onChange={(e) => setName(e.target.value)}
         required
       />
 
-      {/* Sección de selección de íconos */}
-      <label>Selecciona un ícono:</label>
+      {/* Icon selection section */}
+      <label>Select an icon:</label>
       <div className="icon-grid">
         {ICONS.map((icon) => (
           <img
@@ -100,14 +103,14 @@ const NewVideoForm = ({ onClose }) => {
         ))}
       </div>
 
-      {/* Botones de acción */}
-      <button type="submit">Agregar video</button>
+      {/* Action buttons */}
+      <button type="submit">Add Video</button>
       <button type="button" onClick={onClose}>
-        Cancelar
+        Cancel
       </button>
     </form>
   );
 };
 
-// Exporta el componente para uso externo
+// Export the component for reuse
 export default NewVideoForm;

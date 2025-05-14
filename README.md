@@ -1,95 +1,137 @@
-# React Video Clips App 🎬
+# 🎬 Video Clip Editor — React + Redux
 
-Esta aplicación es una prueba técnica diseñada para demostrar el manejo de tecnologías frontend modernas con React.js, Redux Toolkit y media fragments en HTML5.
+This project is a **web application** built with **React**, **Redux Toolkit**, and **React Router** that allows users to upload and manage videos, create timestamped clips, and interact with a dynamic HTML5 video player.
 
-Permite cargar un video, dividirlo en clips, gestionarlos (agregar, editar, eliminar), visualizarlos en una lista, reproducir fragmentos y navegar entre clips. Todo con una interfaz moderna, responsiva y fácil de usar.
-
----
-
-## 🚀 Tecnologías utilizadas
-
-- ⚛️ **React.js** (con hooks funcionales)
-- 🧠 **Redux Toolkit** para manejo de estado global
-- 📹 **HTML5 Video + Media Fragments**
-- 💅 **CSS personalizado responsivo**
-- 🔄 **Persistencia en localStorage**
-- 🔍 **React Router v6** para navegación
+> ✅ Built for a frontend technical challenge.
+> 🧠 Demonstrates state management, component architecture, media fragments, and interactivity.
 
 ---
 
-## 📂 Estructura del proyecto
+## 🚀 Features
+
+### 📼 Core Functionality
+
+- Upload and manage videos (.mp4)
+- Create named **clips** with start/end times
+- Edit and delete clips dynamically
+- Display clips with:
+  - Name
+  - Duration (start–end)
+  - Custom tags
+
+### 🖥️ UI Capabilities
+
+- HTML5 video player with:
+  - **Media Fragments** to play specific sections
+  - Auto-play next clip (with 3-second delay and loading spinner)
+  - Timeline markers for each clip
+- Search by clip name or tag
+- Keyboard navigation:
+  - `→`: next clip
+  - `←`: previous clip
+
+### 🧩 Bonus Features
+
+- Clip search with live filtering
+- Floating button to add clips (modal)
+- Icon selection for video thumbnails
+- Clip persistence in `localStorage`
+- Fully responsive layout
+
+---
+
+## 🛠️ Tech Stack
+
+| Tech            | Purpose                   |
+| --------------- | ------------------------- |
+| React           | Frontend UI framework     |
+| Redux Toolkit   | Global state management   |
+| React Router    | SPA route navigation      |
+| HTML5 Video API | Embedded video control    |
+| CSS             | Custom Responsive Styling |
+
+---
+
+## 🧾 Project Structure
 
 ```
-├── public/
-│   └── icons/                  # Íconos de miniaturas de video
-├── src/
-│   ├── app/
-│   │   └── store.js            # Configuración del store de Redux
-│   ├── components/             # Componentes reutilizables
-│   │   ├── Navbar.jsx
-│   │   ├── ClipList.jsx
-│   │   ├── ClipForm.jsx
-│   │   ├── EditClipForm.jsx
-│   │   ├── VideoPlayer.jsx
-│   │   └── VideoLibrary.jsx
-│   ├── features/
-│   │   └── clips/
-│   │       └── clipsSlice.js   # Slice de Redux para clips y videos
-│   ├── App.jsx
-│   ├── index.css
-│   └── main.jsx                # Punto de entrada de React
+src/
+├── components/
+│   ├── ClipForm.jsx
+│   ├── ClipList.jsx
+│   ├── ClipMarkers.jsx
+│   ├── EditClipForm.jsx
+│   ├── Navbar.jsx
+│   ├── VideoLibrary.jsx
+│   └── VideoPlayer.jsx
+├── features/clips/
+│   └── clipsSlice.js       # Redux slice for video/clip state
+├── app/
+│   └── store.js            # Redux store configuration
+├── App.jsx                 # Main layout component
+├── index.jsx               # Entry point (with routing)
+├── index.css               # Full custom styling
 ```
 
 ---
 
-## 🧪 Funcionalidades requeridas
+## 📸 Screenshots
 
-✅ Reproductor HTML5 que usa media fragments
-✅ Lista de clips
-✅ Video completo como primer elemento
-✅ Formulario para añadir clips (nombre, inicio, fin)
-✅ Edición y eliminación de clips
-✅ Reproducción de fragmentos individuales
+![1747182054181](image/README/1747182054181.png)
+*Clip selection and editing with thumbnail and tags*
 
----
-
-## 🌟 Bonus implementados
-
-✅ Transición automática al siguiente clip con retardo y spinner
-✅ Buscador por nombre o etiqueta con resultados dinámicos
-✅ Marcadores visuales en la línea de tiempo del reproductor
-✅ Hotkeys: flechas izquierda/derecha para cambiar de clip
-✅ Galería de videos con miniaturas e íconos seleccionables
-✅ Persistencia total en localStorage
+![1747182139668](image/README/1747182139668.png)
+*Modal form to add new clips*
 
 ---
 
-## ▶️ Cómo ejecutar
-
-1. Clona el repositorio:
+## 📦 Installation
 
 ```bash
-git clone https://github.com/tu-usuario/video-clips-app.git
-cd video-clips-app
-```
+# 1. Clone this repo
+git clone https://github.com/CamiloAst/video-clips-app.git
+cd video-clips
 
-2. Instala dependencias:
-
-```bash
+# 2. Install dependencies
 npm install
-```
 
-3. Ejecuta la app en modo desarrollo:
-
-```bash
+# 3. Run in development
 npm run dev
 ```
 
-Abre [http://localhost:5173](http://localhost:5173) para verla en el navegador.
+---
+
+## 🧪 Testing Tips
+
+- Use [this sample video](https://download.blender.org/durian/trailer/sintel_trailer-480p.mp4) for uploads
+- Add clips using `start` and `end` in seconds
+- Tags are separated by commas (e.g., `intro, action, slow-mo`)
 
 ---
 
-## ✍️ Autores
+## 📁 Persistence
 
-- Camilo Astudillo – Desarrollador Frontend
-- Prueba Técnica ReactJS para evaluación técnica
+- App uses `localStorage` to persist:
+  - All uploaded videos
+  - All created clips
+  - Last selected video and clip
+
+---
+
+## 👤 Author
+
+- [Juan Camilo Astudillo Olaya](https://github.com/CamiloAst) — Frontend Developer
+
+---
+
+## 📬 Contact
+
+For questions or support, reach out to:
+
+📧 J.KAMILO3020@gmail.com
+
+---
+
+## 📄 License
+
+This project is provided as part of a frontend coding assessment and is open for educational use.

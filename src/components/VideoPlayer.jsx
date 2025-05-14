@@ -1,38 +1,40 @@
-// Importación de hooks de React y Redux
+// === VideoPlayer Component ===
+
 import React, { useRef, useState, useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 
-// Acción para cambiar el clip actual
+// Redux action to set the current clip
 import { setCurrentClip } from "../features/clips/clipsSlice";
 
-// Componente para mostrar marcadores en la línea de tiempo del video
+// Visual markers showing clip positions on the timeline
 import ClipMarkers from "./ClipMarkers";
 
 /**
- * Componente VideoPlayer
+ * VideoPlayer Component
  *
- * Reproduce el clip seleccionado del video actual, mostrando un reproductor HTML5 con:
- * - Fragmentos de tiempo (`media fragments`) para clips.
- * - Control automático para avanzar al siguiente clip tras 3 segundos.
- * - Navegación con teclas (← y →).
- * - Visualización de marcadores de inicio de clips.
+ * Plays the currently selected clip from the active video using an HTML5 video player.
+ * Features:
+ * - Plays video fragments using media fragment URLs.
+ * - Automatically moves to the next clip after 3 seconds of pause.
+ * - Supports keyboard navigation (← and →).
+ * - Displays markers for all clip start times on the timeline.
  */
 const VideoPlayer = () => {
-  const videoRef = useRef(null); // Referencia al elemento <video>
+  const videoRef = useRef(null);
   const dispatch = useDispatch();
 
-  // Estado global: videos y video/clip actual
+  // Global state: current video and clip
   const currentVideoId = useSelector((state) => state.clips.currentVideoId);
   const videos = useSelector((state) => state.clips.videos || {});
   const video = currentVideoId ? videos[currentVideoId] : null;
   const clips = video?.clips || [];
   const currentClip = clips.find((c) => c.id === video?.currentClipId);
 
-  const [loadingNext, setLoadingNext] = useState(false); // Cargando siguiente clip
-  const [videoDuration, setVideoDuration] = useState(0); // Duración total del video (para ClipMarkers)
+  const [loadingNext, setLoadingNext] = useState(false);
+  const [videoDuration, setVideoDuration] = useState(0);
 
   /**
-   * Cambia al siguiente clip en la lista.
+   * Navigates to the next clip in the list (if any).
    */
   const goToNextClip = () => {
     const index = clips.findIndex((c) => c.id === currentClip?.id);
@@ -43,7 +45,7 @@ const VideoPlayer = () => {
   };
 
   /**
-   * Cambia al clip anterior en la lista.
+   * Navigates to the previous clip in the list (if any).
    */
   const goToPreviousClip = () => {
     const index = clips.findIndex((c) => c.id === currentClip?.id);
@@ -54,15 +56,15 @@ const VideoPlayer = () => {
   };
 
   /**
-   * Efecto: carga y reproduce automáticamente el clip actual.
-   * Agrega también los listeners para usar flechas de teclado.
+   * Effect: reloads and plays the current clip.
+   * Also enables left/right arrow key navigation.
    */
   useEffect(() => {
     if (videoRef.current) {
       videoRef.current.load();
       videoRef.current
         .play()
-        .catch((err) => console.warn("Autoplay bloqueado:", err.message));
+        .catch((err) => console.warn("Autoplay blocked:", err.message));
     }
 
     const handleKeyDown = (e) => {
@@ -75,8 +77,7 @@ const VideoPlayer = () => {
   }, [currentClip, clips]);
 
   /**
-   * Efecto: supervisa si se ha alcanzado el final del clip actual y cambia al siguiente.
-   * Incluye un delay de 3 segundos con animación de carga.
+   * Effect: detects end of clip and triggers transition to next clip after 3 seconds.
    */
   useEffect(() => {
     const interval = setInterval(() => {
@@ -101,15 +102,15 @@ const VideoPlayer = () => {
           setLoadingNext(false);
         }, 3000);
       }
-    }, 100); // Revisión cada 100ms
+    }, 100); // Check every 100ms
 
     return () => clearInterval(interval);
   }, [currentClip, clips]);
 
-  // Si no hay video o clip activo, no renderiza nada
+  // If no video or clip is selected, render nothing
   if (!video || !currentClip) return null;
 
-  // Fragmento de medios para reproducir solo el rango del clip
+  // Media fragment for the clip time range
   const mediaFragment =
     currentClip.end !== null
       ? `#t=${currentClip.start},${currentClip.end}`
@@ -117,22 +118,22 @@ const VideoPlayer = () => {
 
   return (
     <div>
-      <h2>Reproduciendo: {currentClip.name}</h2>
+      <h2>Now Playing: {currentClip.name}</h2>
 
-      {/* Animación de carga al cambiar de clip */}
+      {/* Loading animation when transitioning to the next clip */}
       {loadingNext && (
         <div className="loading-spinner">
           <div className="spinner" />
-          <span>Cargando siguiente clip...</span>
+          <span>Loading next clip...</span>
         </div>
       )}
 
-      {/* Reproductor de video HTML5 */}
+      {/* HTML5 video player */}
       <video
         ref={videoRef}
         muted
         controls
-        key={mediaFragment} // Forzar recarga al cambiar clip
+        key={mediaFragment} // Forces reload when clip changes
         onLoadedMetadata={() =>
           setVideoDuration(videoRef.current?.duration || 0)
         }
@@ -145,10 +146,10 @@ const VideoPlayer = () => {
         }}
       >
         <source src={`${video.url}${mediaFragment}`} type="video/mp4" />
-        Tu navegador no soporta el video.
+        Your browser does not support the video tag.
       </video>
 
-      {/* Marcadores de clips en la línea de tiempo */}
+      {/* Timeline clip markers */}
       <ClipMarkers videoDuration={videoDuration} />
     </div>
   );

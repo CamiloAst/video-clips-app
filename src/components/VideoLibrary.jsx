@@ -1,28 +1,28 @@
-// Importación de React y hooks de Redux y React Router
+// === VideoLibrary Component ===
+
 import React from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { setCurrentVideo, deleteVideo } from "../features/clips/clipsSlice";
 import { useNavigate } from "react-router-dom";
 
 /**
- * Componente VideoLibrary
+ * VideoLibrary Component
  *
- * Este componente representa una galería de videos del usuario.
- * Muestra miniaturas de cada video guardado, permitiendo:
- * - Abrir un video para editarlo o reproducir sus clips.
- * - Eliminar un video de la biblioteca.
+ * Displays a gallery of saved user videos. For each video, it allows:
+ * - Opening the video to edit or play its clips.
+ * - Deleting the video from the library.
  */
 const VideoLibrary = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
 
-  // Obtiene todos los videos del estado global (diccionario de ID → video)
+  // Get all videos from global Redux state (as a dictionary: id → video)
   const videos = useSelector((state) => state.clips.videos || {});
 
   /**
-   * Maneja la selección de un video:
-   * - Establece como actual el video seleccionado.
-   * - Redirige a la pantalla principal.
+   * Handles opening a selected video:
+   * - Sets the selected video as the current one in the store.
+   * - Navigates to the main screen for clip management.
    */
   const handleOpen = (id) => {
     dispatch(setCurrentVideo(id));
@@ -31,15 +31,15 @@ const VideoLibrary = () => {
 
   return (
     <div style={{ padding: "2rem" }}>
-      <h2 style={{ marginBottom: "1.5rem" }}>Mis Videos</h2>
+      <h2 style={{ marginBottom: "1.5rem" }}>My Videos</h2>
 
-      {/* Contenedor principal de la galería de videos */}
+      {/* Main container for video gallery */}
       <div
         className={`video-grid ${
           Object.keys(videos).length === 1 ? "centered" : ""
         }`}
       >
-        {/* Itera sobre todos los videos existentes y los renderiza */}
+        {/* Loop through videos and render each one */}
         {Object.entries(videos).map(([id, video]) => (
           <div
             key={id}
@@ -54,7 +54,7 @@ const VideoLibrary = () => {
               textAlign: "center",
             }}
           >
-            {/* Muestra la miniatura del video si tiene ícono */}
+            {/* Video thumbnail with clickable icon */}
             {video.icon && (
               <div
                 className="thumbnail-container"
@@ -69,12 +69,13 @@ const VideoLibrary = () => {
               </div>
             )}
 
-            {/* Botón para eliminar el video, con confirmación */}
+            {/* Delete button with confirmation prompt */}
             <div>
               <button
                 onClick={() => {
-                  if (confirm("¿Eliminar este video?"))
+                  if (confirm("Delete this video?")) {
                     dispatch(deleteVideo(id));
+                  }
                 }}
                 style={{
                   backgroundColor: "crimson",
@@ -83,7 +84,7 @@ const VideoLibrary = () => {
                   padding: "0.5rem 1rem",
                 }}
               >
-                Eliminar
+                Delete
               </button>
             </div>
           </div>
@@ -93,5 +94,5 @@ const VideoLibrary = () => {
   );
 };
 
-// Exporta el componente para uso en el router u otros lugares
+// Export the component for use in routes or other views
 export default VideoLibrary;

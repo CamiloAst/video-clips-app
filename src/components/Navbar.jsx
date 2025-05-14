@@ -1,9 +1,10 @@
-// Importación de React y hooks necesarios
+// === Navbar Component ===
+
 import React, { useState, useMemo } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, Link } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 
-// Importación de acciones para manipular el estado de clips/videos
+// Redux actions to manage video and clip state
 import {
   addVideo,
   setCurrentVideo,
@@ -11,52 +12,49 @@ import {
   setCurrentClip,
 } from "../features/clips/clipsSlice";
 
-// Componente para añadir un nuevo video (posiblemente modal)
+// Form component for adding a new video
 import NewVideoForm from "./NewVideoForm";
 
-// Importación para navegación entre rutas
-import { Link } from "react-router-dom";
-
 /**
- * Componente Navbar
+ * Navbar Component
  *
- * Barra de navegación principal que permite:
- * - Buscar clips por nombre o etiquetas.
- * - Agregar nuevos videos.
- * - Seleccionar o eliminar un video activo.
- * - Navegar a la sección de videos guardados.
+ * This is the main navigation bar for the application.
+ * It allows the user to:
+ * - Search for clips by name or tag.
+ * - Add a new video.
+ * - Select or delete the current video.
+ * - Navigate to the saved videos section.
  *
  * Props:
- * - onSearch: función que propaga el texto de búsqueda a componentes hijos.
+ * - onSearch (function): Propagates the search text to child components.
  */
 const Navbar = ({ onSearch }) => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
 
-  // Acceso al estado global: videos y video actual
+  // Global state: list of videos and current video ID
   const videos = useSelector((state) => state.clips.videos || {});
   const currentVideoId = useSelector((state) => state.clips.currentVideoId);
 
-  // Estados locales para inputs y modales
+  // Local state for form inputs and modal behavior
   const [urlInput, setUrlInput] = useState("");
   const [searchText, setSearchText] = useState("");
   const [showVideoModal, setShowVideoModal] = useState(false);
   const [isClosing, setIsClosing] = useState(false);
 
   /**
-   * Agrega un nuevo video con ID único y la URL proporcionada.
+   * Adds a new video using the entered URL and sets it as the current video.
    */
   const handleAddVideo = () => {
     if (!urlInput.trim()) return;
-    const id = Date.now().toString(); // ID basado en timestamp
+    const id = Date.now().toString(); // Unique ID from timestamp
     dispatch(addVideo({ id, url: urlInput }));
     dispatch(setCurrentVideo(id));
     setUrlInput("");
   };
 
   /**
-   * Obtiene todos los clips de todos los videos para búsqueda.
-   * Se memoiza para evitar recálculos innecesarios.
+   * Returns a memoized list of all clips across all videos.
    */
   const allClips = useMemo(() => {
     return Object.entries(videos).flatMap(([videoId, video]) =>
@@ -69,7 +67,7 @@ const Navbar = ({ onSearch }) => {
   }, [videos]);
 
   /**
-   * Filtra los clips según el texto de búsqueda.
+   * Filters clips based on the search text (matches name or tags).
    */
   const searchResults = searchText
     ? allClips.filter(
@@ -82,15 +80,14 @@ const Navbar = ({ onSearch }) => {
     : [];
 
   /**
-   * Selecciona el video a reproducir desde el dropdown (si existiera).
+   * Sets the selected video by ID from a dropdown (if implemented).
    */
   const handleSelectVideo = (e) => {
     dispatch(setCurrentVideo(e.target.value));
   };
 
   /**
-   * Manejador para el campo de búsqueda.
-   * Propaga el valor a través de `onSearch`.
+   * Handles clip search input and propagates the value.
    */
   const handleSearch = (e) => {
     const value = e.target.value;
@@ -99,7 +96,7 @@ const Navbar = ({ onSearch }) => {
   };
 
   /**
-   * Abre el modal de carga de nuevo video.
+   * Opens the modal to add a new video.
    */
   const openVideoModal = () => {
     setIsClosing(false);
@@ -107,7 +104,7 @@ const Navbar = ({ onSearch }) => {
   };
 
   /**
-   * Cierra el modal con animación de transición.
+   * Closes the video modal with transition animation.
    */
   const closeVideoModal = () => {
     setIsClosing(true);
@@ -118,28 +115,29 @@ const Navbar = ({ onSearch }) => {
   };
 
   /**
-   * Cambia al video y clip seleccionados desde los resultados de búsqueda.
+   * Handles clip selection from the search results.
+   * Sets both the current video and clip, then navigates to the main page.
    */
   const handleClipSelect = (clip) => {
     dispatch(setCurrentVideo(clip.videoId));
     dispatch(setCurrentClip({ videoId: clip.videoId, clipId: clip.id }));
     setSearchText("");
     onSearch("");
-    navigate("/"); // Redirige a la página principal
+    navigate("/");
   };
 
   return (
     <nav className="navbar">
-      {/* Campo de búsqueda de clips */}
+      {/* Clip search input */}
       <div className="search-container">
         <input
           type="text"
-          placeholder="Buscar clips por nombre o etiqueta"
+          placeholder="Search clips by name or tag"
           value={searchText}
           onChange={handleSearch}
         />
 
-        {/* Resultados dinámicos según búsqueda */}
+        {/* Dynamic search results */}
         {searchResults.length > 0 && (
           <div className="search-results">
             {searchResults.map((clip) => (
@@ -155,32 +153,45 @@ const Navbar = ({ onSearch }) => {
         )}
       </div>
 
-      {/* Botón para abrir modal de nuevo video */}
+      {/* Button to open modal for adding a new video */}
       <button className="btn btn-primary" onClick={openVideoModal}>
-        <i className="fas fa-video"></i> Nuevo Video
+        <i className="fas fa-video"></i> New Video
       </button>
 
-      {/* Enlace a vista de todos los videos */}
+      {/* Link to saved videos page */}
       <Link to="/videos" className="btn btn-secondary">
-        <i className="fas fa-th-large"></i> Mis Videos
+        <i className="fas fa-th-large"></i> My Videos
       </Link>
 
-      {/* Botón para eliminar el video actual con confirmación */}
+      {/* Button to delete the current video with confirmation */}
       {currentVideoId && (
         <button
           className="btn btn-danger"
           onClick={() => {
             if (
               confirm(
-                "¿Estás seguro de que deseas eliminar este video y todos sus clips?"
+                "Are you sure you want to delete this video and all of its clips?"
               )
             ) {
               dispatch(deleteVideo(currentVideoId));
             }
           }}
         >
-          Eliminar video actual
+          Delete Current Video
         </button>
+      )}
+      {showVideoModal && (
+        <div
+          className={`modal-overlay ${isClosing ? "fade-out" : ""}`}
+          onClick={closeVideoModal}
+        >
+          <div
+            className={`modal ${isClosing ? "slide-out" : ""}`}
+            onClick={(e) => e.stopPropagation()}
+          >
+            <NewVideoForm onClose={closeVideoModal} />
+          </div>
+        </div>
       )}
     </nav>
   );

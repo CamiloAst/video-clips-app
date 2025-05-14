@@ -1,37 +1,40 @@
-// Importación de React y hooks necesarios
+// === ClipList Component ===
+
 import React, { useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 
-// Importación de acciones del slice de clips
+// Redux actions to set and delete clips
 import { setCurrentClip, deleteClip } from "../features/clips/clipsSlice";
 
-// Importación del formulario de edición de clips
+// Component to edit a clip
 import EditClipForm from "./EditClipForm";
 
 /**
- * Componente ClipList
+ * ClipList Component
  *
- * Este componente representa una lista de clips relacionados con el video actual.
- * Permite:
- *  - Visualizar la lista de clips asociados al video.
- *  - Filtrar los clips por nombre o etiquetas usando la barra de búsqueda.
- *  - Seleccionar un clip para reproducirlo.
- *  - Editar o eliminar un clip.
+ * This component displays a list of clips associated with the currently selected video.
+ * Features:
+ * - Filters clips by name or tags
+ * - Allows selecting a clip for playback
+ * - Enables editing or deleting existing clips
+ *
+ * Props:
+ * - search (string): Optional search query to filter clips by name or tag
  */
 const ClipList = ({ search = "" }) => {
   const dispatch = useDispatch();
 
-  // Obtiene el ID del video actualmente seleccionado en el estado global
+  // Get the ID of the currently selected video
   const currentVideoId = useSelector((state) => state.clips.currentVideoId);
 
-  // Obtiene el objeto de video correspondiente al ID actual
+  // Get the video object from the store
   const video = useSelector((state) => {
     if (!state.clips.currentVideoId) return null;
     return state.clips.videos[state.clips.currentVideoId];
   });
 
   /**
-   * Función auxiliar para formatear tiempos en segundos a formato MM:SS
+   * Format a number of seconds into MM:SS format
    */
   const formatTime = (seconds) => {
     const date = new Date(null);
@@ -39,14 +42,14 @@ const ClipList = ({ search = "" }) => {
     return date.toISOString().substr(14, 5);
   };
 
-  // Obtiene los clips del video actual, o una lista vacía si no existen
+  // Retrieve clips from the current video or return an empty array
   const clips = video?.clips || [];
 
-  // Clip que actualmente se está reproduciendo (si aplica)
+  // ID of the currently playing clip (if any)
   const currentClipId = video?.currentClipId;
 
   /**
-   * Filtrado de clips según el texto de búsqueda (nombre o etiquetas)
+   * Filter the list of clips based on the search query (matches name or tags)
    */
   const filteredClips = clips.filter((clip) => {
     const query = search.toLowerCase();
@@ -56,24 +59,24 @@ const ClipList = ({ search = "" }) => {
     );
   });
 
-  // Estado local para manejar qué clip está siendo editado
+  // Local state to track which clip is being edited
   const [editingId, setEditingId] = useState(null);
 
-  // Si no hay un video seleccionado, no renderiza nada
+  // If no video is selected, don't render anything
   if (!video) return null;
 
   return (
     <div className="clip-card">
-      <h3>Clips del video</h3>
+      <h3>Video Clips</h3>
 
       <div className="clip-scroll">
         <ul>
-          {/* Itera sobre los clips filtrados y los renderiza */}
+          {/* Render each clip in the filtered list */}
           {filteredClips.map((clip) => (
             <div key={clip.id} className="clip-item">
               <div className="clip-header">
                 <div className="clip-left">
-                  {/* Botón para reproducir el clip */}
+                  {/* Play button */}
                   <img
                     src="/icons/boton-de-play.png"
                     alt="play"
@@ -90,14 +93,14 @@ const ClipList = ({ search = "" }) => {
                     }
                   />
 
-                  {/* Miniatura del clip */}
+                  {/* Thumbnail */}
                   <img
                     src={video.icon || "/icons/icon-default.jpg"}
                     alt="clip"
                     className="clip-thumbnail"
                   />
 
-                  {/* Detalles del clip: nombre y rango de tiempo */}
+                  {/* Clip details: name and time range */}
                   <div className="clip-details">
                     <div className="clip-name">{clip.name}</div>
                     <div className="clip-time">
@@ -106,11 +109,11 @@ const ClipList = ({ search = "" }) => {
                   </div>
                 </div>
 
-                {/* Acciones: eliminar o editar clip */}
+                {/* Clip actions: delete and edit */}
                 <div className="clip-actions">
                   <img
                     src="/icons/eliminar.png"
-                    alt="eliminar"
+                    alt="delete"
                     className="icon-action"
                     onClick={() =>
                       dispatch(
@@ -120,14 +123,14 @@ const ClipList = ({ search = "" }) => {
                   />
                   <img
                     src="/icons/editar.png"
-                    alt="editar"
+                    alt="edit"
                     className="icon-action"
                     onClick={() => setEditingId(clip.id)}
                   />
                 </div>
               </div>
 
-              {/* Renderiza el formulario de edición si el clip está en modo edición */}
+              {/* Show edit form if this clip is being edited */}
               {editingId === clip.id && (
                 <EditClipForm
                   clip={clip}
@@ -143,5 +146,5 @@ const ClipList = ({ search = "" }) => {
   );
 };
 
-// Exporta el componente ClipList para ser utilizado en otras partes de la aplicación
+// Export the component for use in other parts of the app
 export default ClipList;

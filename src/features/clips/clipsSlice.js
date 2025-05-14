@@ -1,29 +1,30 @@
-// Importación de la utilidad para crear slices desde Redux Toolkit
+// === Redux Slice for Video Clips Management ===
+
 import { createSlice } from "@reduxjs/toolkit";
 
-// Estado inicial de la aplicación de clips
+// Initial state structure for video clips application
 const initialState = {
   videos: {
-    // Estructura esperada:
+    // Example structure:
     // videoId: {
-    //   url: 'https://video.mp4',
-    //   name: 'Video nombre',
-    //   icon: '/ruta/icon.jpg',
+    //   url: 'https://example.com/video.mp4',
+    //   name: 'Sample Video',
+    //   icon: '/icons/icon-1.jpg',
     //   clips: [...],
-    //   currentClipId: 'id',
+    //   currentClipId: 'clipId',
     // }
   },
-  currentVideoId: null, // ID del video actualmente seleccionado
+  currentVideoId: null, // Currently selected video ID
 };
 
-// Definición del slice `clips`
+// Define the "clips" slice of state
 const clipsSlice = createSlice({
   name: "clips",
   initialState,
   reducers: {
     /**
-     * Agrega un nuevo video con un clip inicial que representa todo el video.
-     * El video se convierte automáticamente en el actual.
+     * Adds a new video to the state with a default full-length clip.
+     * Automatically sets the new video as the current one.
      */
     addVideo: (state, action) => {
       const { id, url, name, icon } = action.payload;
@@ -33,7 +34,7 @@ const clipsSlice = createSlice({
         icon,
         clips: [
           {
-            id: "full-video", // Clip inicial que cubre todo el video
+            id: "full-video", // Default clip covering the entire video
             name: "Full Video",
             start: 0,
             end: null,
@@ -41,13 +42,14 @@ const clipsSlice = createSlice({
             isDefault: true,
           },
         ],
-        currentClipId: "full-video", // Se inicia mostrando el video completo
+        currentClipId: "full-video", // Automatically play full video on load
       };
       state.currentVideoId = id;
     },
 
     /**
-     * Elimina un video y, si era el actual, selecciona el primero restante o nulifica.
+     * Deletes a video by ID. If it was the current video,
+     * switches to another remaining video or null if none left.
      */
     deleteVideo: (state, action) => {
       const videoId = action.payload;
@@ -60,7 +62,7 @@ const clipsSlice = createSlice({
     },
 
     /**
-     * Establece qué video es el actual (si existe).
+     * Sets the current active video by ID (if it exists).
      */
     setCurrentVideo: (state, action) => {
       const videoId = action.payload;
@@ -70,7 +72,7 @@ const clipsSlice = createSlice({
     },
 
     /**
-     * Agrega un nuevo clip a un video existente.
+     * Adds a new clip to the specified video.
      */
     addClip: (state, action) => {
       const { videoId, clip } = action.payload;
@@ -78,8 +80,8 @@ const clipsSlice = createSlice({
     },
 
     /**
-     * Elimina un clip de un video.
-     * No permite eliminar el clip por defecto ("full-video").
+     * Deletes a clip from a video by ID.
+     * The default clip ("full-video") cannot be deleted.
      */
     deleteClip: (state, action) => {
       const { videoId, clipId } = action.payload;
@@ -94,7 +96,7 @@ const clipsSlice = createSlice({
     },
 
     /**
-     * Edita los datos de un clip específico dentro de un video.
+     * Edits an existing clip in a video.
      */
     editClip: (state, action) => {
       const { videoId, clip } = action.payload;
@@ -106,7 +108,7 @@ const clipsSlice = createSlice({
     },
 
     /**
-     * Establece qué clip se está reproduciendo actualmente dentro de un video.
+     * Sets the currently playing clip within a video.
      */
     setCurrentClip: (state, action) => {
       const { videoId, clipId } = action.payload;
@@ -117,7 +119,7 @@ const clipsSlice = createSlice({
   },
 });
 
-// Exporta las acciones generadas automáticamente
+// Export the auto-generated action creators
 export const {
   addVideo,
   deleteVideo,
@@ -128,5 +130,5 @@ export const {
   setCurrentClip,
 } = clipsSlice.actions;
 
-// Exporta el reducer para su uso en el store principal
+// Export the reducer to be included in the Redux store
 export default clipsSlice.reducer;
